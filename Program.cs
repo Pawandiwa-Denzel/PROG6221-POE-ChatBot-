@@ -12,6 +12,7 @@
             {
                 PlayVoice();
                 ShowAscii();
+                GreetUser();
 
             
             }
@@ -45,6 +46,23 @@
 ");
                 Console.ResetColor();
             }
+        static void GreetUser()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Hi, What's your name?");
+            Console.ResetColor();
+            Console.Write(">>> ");
+            string name = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "Friend";
+            }
+
+            Console.WriteLine($"\nWelcome, {name}! I'm here to help you stay safe online.\n");
+
+            ChatBot();
+        }
 
         static void ChatBot()
         {
