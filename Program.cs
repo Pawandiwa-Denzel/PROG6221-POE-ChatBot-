@@ -46,8 +46,59 @@
                 Console.ResetColor();
             }
 
+        static void ChatBot()
+        {
+            while (true)
+            {
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Ask me a question or type 'x' to quit:");
+                Console.ResetColor();
+                Console.Write(">>> ");
+                string input = Console.ReadLine()?.ToLower().Trim();
 
-            static void Divider()
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("Type something...");
+                }
+                else if (input.Contains("how are you"))
+                {
+                    Response("I'm fine , thanks!");
+                }
+                else if (input.Contains("purpose"))
+                {
+                    Response("My purpose is to help you stay safe online.");
+                }
+                else if (input.Contains("what can i ask"))
+                {
+                    Response("You can ask me about password safety, phishing, and safe browsing.");
+                }
+                else if (input.Contains("password"))
+                {
+                    Response("Use strong, unique passwords that contain numbers, special characters and diffrent cases. Avoid reusing passwords!");
+                }
+                else if (input.Contains("phishing"))
+                {
+                    Response("Be mindful of suspicious emails and links sent to you. Always verify the source.");
+                }
+                else if (input.Contains("safe browsing"))
+                {
+                    Response("Ensure websites use HTTPS, and don't download files from untrusted sources.");
+                }
+                else if (input == "x")
+                {
+                    Response("See ya! and  stay safe and secure online there are weirdos out there");
+                    break;
+                }
+                else
+                {
+                    Response("I didn't quite understand that. Could you rephrase?");
+                }
+
+                Console.WriteLine();
+            }
+        }
+        static void Divider()
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(new string('-', 120));
