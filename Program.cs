@@ -93,7 +93,7 @@
                 }
                 else if (input.Contains("password"))
                 {
-                    Response("Use strong, unique passwords that contain numbers, special characters and diffrent cases. Avoid reusing passwords!");
+                    Response("Use strong, unique passwords that contain numbers, special characters and diffrent cases. Dont reuse passwords!");
                 }
                 else if (input.Contains("phishing"))
                 {
@@ -128,7 +128,7 @@
                 foreach (char c in message)
                 {
                     Console.Write(c);
-                    Thread.Sleep(35); // Simulate typing
+                    Thread.Sleep(30);
                 }
                 Console.WriteLine();
             }
