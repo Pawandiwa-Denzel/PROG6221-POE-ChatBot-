@@ -1,70 +1,77 @@
-﻿
-    using System;
-    using System.Media;
-    using System.Threading;
+﻿using System;
+using System.Media;
+using System.Threading;
+using System.Collections.Generic;
 
-    namespace CyberSecurity_Bot
-    
+namespace CyberSecurity_Bot
+{
+
+
+    class Program
     {
-        class Program
+        private static List<ChatBotFeature> features = new List<ChatBotFeature>
         {
-            static void Main(string[] args)
-            {
-                PlayVoice();
-                ShowAscii();
-                GreetUser();
+            new KeywordRecognition(),
+            new SentimentDetection(),
+            new MemoryFeature()
+        };
 
-            
+        static void Main(string[] args)
+        {
+            PlayVoice();
+            ShowAscii();
+            UserData userData = GreetUser();
+            ChatBot(userData);
+        }
+
+        static void PlayVoice()
+        {
+            try
+            {
+                SoundPlayer player = new SoundPlayer("voice.wav");
+                player.PlaySync();
             }
-
-            static void PlayVoice()
+            catch
             {
-                try
-                {
-                    SoundPlayer player = new SoundPlayer("voice.wav");
-                    player.PlaySync(); // Waits until audio finishes
-                }
-                catch
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Voice greeting could not be played. Make sure 'voice' exists.");
-                    Console.ResetColor();
-                }
-
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Voice greeting could not be played. Make sure 'voice.wav' exists.");
+                Console.ResetColor();
             }
+        }
 
-            static void ShowAscii()
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(@"
-  
+        static void ShowAscii()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(@"
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║ 🔒                                                                       ║
 ║              CYBER SECURITY AWARENESS BOT – Stay Safe Online             ║
 ║                                                               🔒         ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ");
-                Console.ResetColor();
-            }
-        static void GreetUser()
+            Console.ResetColor();
+        }
+
+        static UserData GreetUser()
         {
+            var userData = new UserData();
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Hi, What's your name?");
             Console.ResetColor();
             Console.Write(">>> ");
-            string name = Console.ReadLine();
+            userData.Name = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(userData.Name))
             {
-                name = "Friend";
+                userData.Name = "Friend";
             }
 
-            Console.WriteLine($"\nWelcome, {name}! I'm here to help you stay safe online.\n");
-
-            ChatBot();
+            Console.WriteLine($"\nWelcome, {userData.Name}! I'm here to help you stay safe online.\n");
+            return userData;
         }
 
-        static void ChatBot()
+        static void ChatBot(UserData userData)
         {
             while (true)
             {
@@ -74,65 +81,79 @@
                 Console.ResetColor();
                 Console.Write(">>> ");
                 string input = Console.ReadLine()?.ToLower().Trim();
+                userData.ConversationHistory.Add(input);
 
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.WriteLine("Type something...");
-                }
-                else if (input.Contains("how are you"))
-                {
-                    Response("I'm fine , thanks!");
-                }
-                else if (input.Contains("purpose"))
-                {
-                    Response("My purpose is to help you stay safe online.");
-                }
-                else if (input.Contains("what can i ask"))
-                {
-                    Response("You can ask me about password safety, phishing, and safe browsing.");
-                }
-                else if (input.Contains("password"))
-                {
-                    Response("Use strong, unique passwords that contain numbers, special characters and diffrent cases. Dont reuse passwords!");
-                }
-                else if (input.Contains("phishing"))
-                {
-                    Response("Be mindful of suspicious emails and links sent to you. Always verify the source.");
-                }
-                else if (input.Contains("safe browsing"))
-                {
-                    Response("Ensure websites use HTTPS, and don't download files from untrusted sources.");
+                    Response("Type something...");
                 }
                 else if (input == "x")
                 {
-                    Response("See ya! and  stay safe and secure online there are weirdos out there");
+                    Response("See ya! Stay safe and secure online - there are weirdos out there!");
                     break;
                 }
                 else
                 {
-                    Response("I didn't quite understand that. Could you rephrase?");
+                    string response = ProcessFeatures(input, userData);
+                    if (response == null)
+                    {
+                        response = DefaultResponse(input);
+                    }
+                    Response(response);
                 }
 
                 Console.WriteLine();
             }
         }
-        static void Divider()
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(new string('-', 120));
-                Console.ResetColor();
-            }
 
-            static void Response(string message)
+        static string ProcessFeatures(string input, UserData userData)
+        {
+            foreach (var feature in features)
             {
-                foreach (char c in message)
+                string response = feature.ProcessInput(input, userData);
+                if (response != null)
                 {
-                    Console.Write(c);
-                    Thread.Sleep(30);
+                    return response;
                 }
-                Console.WriteLine();
             }
+            return null;
+        }
 
+        static string DefaultResponse(string input)
+        {
+            if (input.Contains("how are you"))
+            {
+                return "I'm fine, thanks!";
+            }
+            else if (input.Contains("purpose"))
+            {
+                return "My purpose is to help you stay safe online.";
+            }
+            else if (input.Contains("what can i ask"))
+            {
+                return "You can ask me about password safety, phishing, privacy, and safe browsing.";
+            }
+            else
+            {
+                return "I didn't quite understand that. Could you rephrase?";
+            }
+        }
 
+        static void Divider()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(new string('-', 120));
+            Console.ResetColor();
+        }
+
+        static void Response(string message)
+        {
+            foreach (char c in message)
+            {
+                Console.Write(c);
+                Thread.Sleep(30);
+            }
+            Console.WriteLine();
         }
     }
+}
